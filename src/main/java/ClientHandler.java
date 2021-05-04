@@ -8,7 +8,6 @@ import java.util.Map;
 public class ClientHandler implements Runnable {
     private final Socket socket;
     private final Map<String, Map<String, Handler>> handlers;
-    private Request request;
     private final Handler notFoundHandler = ((request, out) -> {
         try {
             out.write((
@@ -34,7 +33,7 @@ public class ClientHandler implements Runnable {
         while (!Thread.interrupted()) {
             try (final var in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
                  final var out = new BufferedOutputStream(socket.getOutputStream());) {
-                this.request = Request.getParseRequest(in);
+                Request request = Request.getParseRequest(in);
                 System.out.println(request.getPathRequest());
                 var handlesMap = handlers.get(request.getMethodRequest());
                 if (handlesMap == null) {
