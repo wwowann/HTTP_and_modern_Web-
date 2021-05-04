@@ -4,12 +4,12 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class Request {
-    private String methodRequest;
-    private String patchRequest;
+    private final String methodRequest;
+    private final String patchRequest;
     private final Map<String, String> headers;
-    private String bodyRequest;
+    private final String bodyRequest;
 
-    public Request(String methodRequest, String patchRequest,
+    private Request(String methodRequest, String patchRequest,
                    Map<String, String> headers, String bodyRequest) {
         this.methodRequest = methodRequest;
         this.patchRequest = patchRequest;
@@ -17,14 +17,14 @@ public class Request {
         this.bodyRequest = bodyRequest;
     }
 
-    public Request getParseRequest(BufferedReader in) throws IOException {
+    public static Request getParseRequest(BufferedReader in) throws IOException {
         final var requestLine = in.readLine();
         final var parts = requestLine.split(" ");
         if (parts.length != 3) {
             throw new IOException("некорректный запрос");
         }
-        this.methodRequest = parts[0];
-        this.patchRequest = parts[1];
+        var methodRequest = parts[0];
+        var patchRequest = parts[1];
         String line;
         Map<String, String> headers = new HashMap<>();
         while (!(line = in.readLine()).equals("")) {
@@ -35,20 +35,20 @@ public class Request {
             headers.put(headerName, headerValue);//добавляем в мапу строку с хедером
         }
         if (methodRequest.equals("GET")) {//Если метод GET, то возвращаем спарсенный запрос без тела
-            return this;
+            return new Request("GET",patchRequest,headers,null);
         }
         var contentLength = headers.get("Content-Length"); //обращаемся к хедеру с контентом
         final var length = contentLength.length(); //определяем размер тела запроса
         final var bodyBytes = in.read(CharBuffer.allocate(length)); //считываем размер в байтах
-        this.bodyRequest = String.valueOf(bodyBytes); //считыем тело запроса body
-        return this; //возвращаем распарсенный запрос с телом
+        String bodyRequest = String.valueOf(bodyBytes); //считыем тело запроса body
+        return new Request(methodRequest,patchRequest,headers,bodyRequest); //возвращаем распарсенный запрос с телом
     }
 
     public String getMethodRequest() {
         return methodRequest;
     }
 
-    public String getPatchRequest() {
+    public String getPathRequest() {
         return patchRequest;
     }
 

@@ -27,10 +27,10 @@ public class Server {
         }
     }
 
-    void addHandler(String method, String patch, Handler handler) {
+    void addHandler(String method, String path, Handler handler) {
         if (handlers.get(method) == null) {
             handlers.put(method, new ConcurrentHashMap<>());
         }
-        handlers.get(method).put(patch, handler);
+        handlers.get(method).put(path, handler);
     }
 }

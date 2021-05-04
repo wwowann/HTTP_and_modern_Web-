@@ -9,7 +9,7 @@ public class Main {
         Server server = new Server(9999);
         server.listen();
         server.addHandler("GET", "/page.html", ((request, out) -> {
-            final var filePath = Path.of(".", "public", request.getPatchRequest());
+            final var filePath = Path.of(".", "public", request.getPathRequest());
             final String mimeType;
             try {
                 mimeType = Files.probeContentType(filePath);

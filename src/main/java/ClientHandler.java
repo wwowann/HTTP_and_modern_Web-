@@ -34,13 +34,14 @@ public class ClientHandler implements Runnable {
         while (!Thread.interrupted()) {
             try (final var in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
                  final var out = new BufferedOutputStream(socket.getOutputStream());) {
-                this.request = request.getParseRequest(in);
+                this.request = Request.getParseRequest(in);
+                System.out.println(request.getPathRequest());
                 var handlesMap = handlers.get(request.getMethodRequest());
                 if (handlesMap == null) {
                     notFoundHandler.handle(request, out);
                     return;
                 }
-                var handler = handlesMap.get(request.getPatchRequest());
+                var handler = handlesMap.get(request.getPathRequest());
                 if (handler == null) {
                     notFoundHandler.handle(request, out);
                     return;
